@@ -277,6 +277,13 @@ you should place your code here."
         (helm-find-files-up-one-level 1)
       (apply orig-fun args)))
   (advice-add 'helm-ff-delete-char-backward :around #'helm-find-files-navigate-back)
+
+  ;; Helm shortcuts
+  (define-key evil-normal-state-map "\C-n" 'helm-projectile-find-file)
+  (define-key evil-normal-state-map (kbd "C-S-n") 'helm-find-files)
+  (define-key evil-normal-state-map "\C-p" 'helm-projectile-switch-to-buffer)
+  (define-key evil-normal-state-map (kbd "C-S-p") 'helm-buffers-list)
+  (define-key evil-normal-state-map (kbd "C-SPC") 'helm-projectile-switch-project)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
