@@ -1,0 +1,35 @@
+* Spacemacs configuration
+
+Just minor tweaks to the Spacemacs distribution.
+
+** Installation on Mac OS X
+
+*** Install Emacs Mac OS X port
+
+#+BEGIN_SRC bash
+    brew tap railwaycat/emacsmacport
+    brew install emacs-mac
+#+END_SRC
+
+*** Clone the Spacemacs config
+
+#+BEGIN_SRC bash
+    git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
+#+END_SRC
+
+*** Install custom configs
+
+Get the ~.spacemacs~ and ~.bash_profile~ files from this repo to your home directory.
+
+
+** Shortcut changes
+
+In normal mode:
+
+ - ~C-n~ to open project's files list
+ - ~C-N~ to navigate to a different file
+ - ~C-p~ to open project's buffers list
+ - ~C-P~ to open buffers list
+ - ~C-Space~ to open projects list
+ 
+
