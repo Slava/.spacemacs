@@ -26,6 +26,7 @@ values."
      auto-completion
      better-defaults
      emacs-lisp
+     javascript
      git
      markdown
      org
@@ -284,6 +285,10 @@ you should place your code here."
   (define-key evil-normal-state-map "\C-p" 'helm-projectile-switch-to-buffer)
   (define-key evil-normal-state-map (kbd "C-S-p") 'helm-buffers-list)
   (define-key evil-normal-state-map (kbd "C-SPC") 'helm-projectile-switch-project)
+  
+  ;; JavaScript
+  (setq-default js2-basic-offset 2)
+  (setq-default js-indent-level 2)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
