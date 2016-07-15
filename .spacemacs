@@ -27,10 +27,12 @@ values."
      better-defaults
      emacs-lisp
      javascript
+     typescript
      git
      markdown
      org
      (shell :variables
+            shell-default-shell 'ansi-shell
             shell-default-height 30
             shell-default-position 'bottom)
      spell-checking
@@ -46,9 +48,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(
-     tide
-     )
+   dotspacemacs-additional-packages '()
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -291,20 +291,6 @@ you should place your code here."
   ;; JavaScript
   (setq-default js2-basic-offset 2)
   (setq-default js-indent-level 2)
-
-  ;; Typescript
-  (defun setup-tide-mode ()
-    (interactive)
-    (tide-setup)
-    (flycheck-mode +1)
-    (setq flycheck-check-syntax-automatically '(save mode-enabled))
-    (eldoc-mode +1)
-    ;; company is an optional dependency. You have to
-    ;; install it separately via package-install
-    ;; `M-x package-install [ret] company`
-    (company-mode +1))
-  (setq company-tooltip-align-annotations t)
-  (add-hook 'typescript-mode-hook #'setup-tide-mode)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -319,9 +305,8 @@ you should place your code here."
  '(projectile-project-root-files
    (quote
     ("rebar.config" "project.clj" "build.boot" "SConstruct" "pom.xml" "build.sbt" "gradlew" "build.gradle" "Gemfile" "requirements.txt" "setup.py" "tox.ini" "package.json" "gulpfile.js" "Gruntfile.js" "bower.json" "composer.json" "Cargo.toml" "mix.exs" "stack.yaml" "info.rkt" "TAGS" "GTAGS" ".meteor" ".dropbox" ".git" ".hg" ".svn")))
- '(typescript-expr-indent-offset 2)
- '(typescript-indent-level 2)
- '(typescript-mode-hook (quote (setup-tide-mode))))
+ '(typescript-expr-indent-offset 0)
+ '(typescript-indent-level 2))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

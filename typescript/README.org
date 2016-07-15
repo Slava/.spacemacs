@@ -7,7 +7,7 @@ stock layer, this one uses =tide= instead of =tss= and runs the recommended
 configuration of the package.
 
 * Install
-First, clone this layer into your =~/.emacs.d/local/= folder.
+First, clone this layer into your =~/.emacs.d/private/= folder.
 
 To use this contribution add it to your =~/.spacemacs=
 
