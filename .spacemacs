@@ -115,7 +115,7 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 13
+                               :size 24
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -291,6 +291,12 @@ you should place your code here."
   ;; JavaScript
   (setq-default js2-basic-offset 2)
   (setq-default js-indent-level 2)
+
+  ;; Org mode
+  (require 'org-indent)
+  (setq-default org-startup-indented t)
+  (require 'ox)
+  (setq-default org-latex-create-formula-image-program 'dvipng)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
