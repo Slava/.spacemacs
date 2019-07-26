@@ -18,6 +18,12 @@ values."
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
+     sql
+     yaml
+     python
+     html
+     ruby
+     shell-scripts
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -286,7 +292,8 @@ you should place your code here."
   (define-key evil-normal-state-map (kbd "C-S-n") 'helm-find-files)
   (define-key evil-normal-state-map "\C-p" 'helm-projectile-switch-to-buffer)
   (define-key evil-normal-state-map (kbd "C-S-p") 'helm-buffers-list)
-  (define-key evil-normal-state-map (kbd "C-SPC") 'helm-projectile-switch-project)
+  (define-key evil-normal-state-map (kbd "C-SPC") 'persp-switch)
+  (define-key evil-normal-state-map (kbd "C-S-SPC") 'spacemacs/helm-persp-switch-project)
 
   ;; JavaScript
   (setq-default js2-basic-offset 2)
@@ -297,6 +304,45 @@ you should place your code here."
   (setq-default org-startup-indented t)
   (require 'ox)
   (setq-default org-latex-create-formula-image-program 'dvipng)
+
+  ;; Typescript
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
+  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+
+  ;; filepaths in modeline
+  (with-eval-after-load 'subr-x
+    (setq-default mode-line-buffer-identification
+                  '(:eval (format-mode-line (propertized-buffer-identification (or (when-let* ((buffer-file-truename buffer-file-truename))
+                                                                                     (file-name-nondirectory buffer-file-truename))
+                                                                                   "%b"))))))
+
+  ;; Configure persp-mode to do mru listing
+  (with-eval-after-load "persp-mode"
+    (add-hook 'persp-before-switch-functions
+              #'(lambda (new-persp-name w-or-f)
+                  (let ((cur-persp-name (safe-persp-name (get-current-persp))))
+                    (when (member cur-persp-name persp-names-cache)
+                      (setq persp-names-cache
+                            (cons cur-persp-name
+                                  (delete cur-persp-name persp-names-cache)))))))
+
+    (add-hook 'persp-renamed-functions
+              #'(lambda (persp old-name new-name)
+                  (setq persp-names-cache
+                        (cons new-name (delete old-name persp-names-cache)))))
+
+    (add-hook 'persp-before-kill-functions
+              #'(lambda (persp)
+                  (setq persp-names-cache
+                        (delete (safe-persp-name persp) persp-names-cache))))
+
+    (add-hook 'persp-created-functions
+              #'(lambda (persp phash)
+                  (when (and (eq phash *persp-hash*)
+                             (not (member (safe-persp-name persp)
+                                          persp-names-cache)))
+                    (setq persp-names-cache
+                          (cons (safe-persp-name persp) persp-names-cache))))))
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -308,9 +354,20 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(js2-mode-show-strict-warnings nil)
  '(js2-strict-trailing-comma-warning nil)
+ '(package-selected-packages
+   (quote
+    (sql-indent yaml-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic graphql-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv rake minitest chruby bundler inf-ruby insert-shebang fish-mode company-shell xterm-color ws-butler winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org tide typescript-mode spaceline powerline smeargle shell-pop reveal-in-osx-finder restart-emacs rainbow-delimiters popwin persp-mode pcre2el pbcopy paradox spinner osx-trash osx-dictionary orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file neotree mwim multi-term move-text mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup macrostep lorem-ipsum livid-mode skewer-mode simple-httpd linum-relative link-hint launchctl json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc indent-guide hydra lv hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile helm-mode-manager helm-make helm-gitignore request helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck pkg-info epl flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit transient git-commit with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump f disaster diminish diff-hl company-tern s dash-functional tern dash company-statistics company-c-headers company column-enforce-mode coffee-mode cmake-mode clean-aindent-mode clang-format bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup)))
+ '(persp-add-buffer-on-find-file t)
+ '(persp-auto-resume-time -1)
+ '(persp-mode t nil (persp-mode))
+ '(persp-nil-name "Default")
+ '(persp-reset-windows-on-nil-window-conf nil)
+ '(persp-set-ido-hooks t)
+ '(persp-set-last-persp-for-new-frames nil)
  '(projectile-project-root-files
    (quote
     ("rebar.config" "project.clj" "build.boot" "SConstruct" "pom.xml" "build.sbt" "gradlew" "build.gradle" "Gemfile" "requirements.txt" "setup.py" "tox.ini" "package.json" "gulpfile.js" "Gruntfile.js" "bower.json" "composer.json" "Cargo.toml" "mix.exs" "stack.yaml" "info.rkt" "TAGS" "GTAGS" ".meteor" ".dropbox" ".git" ".hg" ".svn")))
+ '(term-char-mode-point-at-process-mark nil)
  '(typescript-expr-indent-offset 0)
  '(typescript-indent-level 2))
 (custom-set-faces
