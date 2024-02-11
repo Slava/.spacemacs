@@ -17,30 +17,31 @@ values."
    ;; List of configuration layers to load. If it is the symbol `all' instead
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
-   '(
+   '(windows-scripts
+     nginx
+     csv
+     rust
+     (go :variables go-tab-width 4)
      sql
      yaml
      python
      html
      ruby
      shell-scripts
-     ;; ----------------------------------------------------------------
-     ;; Example of useful layers you may want to use right away.
-     ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
-     ;; <M-m f e R> (Emacs style) to install them.
-     ;; ----------------------------------------------------------------
+     terraform
      auto-completion
      better-defaults
      emacs-lisp
      javascript
-     typescript
+     (typescript :variables typescript-backend 'tide)
      git
      markdown
      org
      (shell :variables
-            shell-default-shell 'ansi-shell
+            shell-default-shell 'vterm
             shell-default-height 30
-            shell-default-position 'bottom)
+            shell-default-term-shell "/opt/homebrew/bin/fish"
+            shell-default-position 'right)
      spell-checking
      syntax-checking
      version-control
@@ -48,7 +49,8 @@ values."
      shell
      c-c++
      (c-c++ :variables c-c++-enable-clang-support t)
-     (shell :variables shell-default-shell 'ansi-term)
+     (c-c++ :variables c-c++-backend 'lsp-clangd)
+     docker
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -121,10 +123,10 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 24
+                               :size 16
                                :weight normal
                                :width normal
-                               :powerline-scale 1.1)
+                               :powerline-scale 1.0)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The leader key accessible in `emacs state' and `insert state'
@@ -228,6 +230,15 @@ values."
    ;; `current', `all' or `nil'. Default is `all' (highlight any scope and
    ;; emphasis the current one). (default 'all)
    dotspacemacs-highlight-delimiters 'all
+   ;; If non-nil, start an Emacs server if one is not already running.
+   ;; (default nil)
+   dotspacemacs-enable-server t
+   ;; Set the emacs server socket location.
+   ;; If nil, uses whatever the Emacs default is, otherwise a directory path
+   ;; like \"~/.emacs.d/server\". It has no effect if
+   ;; `dotspacemacs-enable-server' is nil.
+   ;; (default nil)
+   dotspacemacs-server-socket-dir nil
    ;; If non nil advises quit functions to keep server open when quitting.
    ;; (default nil)
    dotspacemacs-persistent-server t
@@ -271,6 +282,9 @@ you should place your code here."
   (evil-define-key 'visual evil-surround-mode-map "s" 'evil-substitute)
   (evil-define-key 'visual evil-surround-mode-map "S" 'evil-surround-region)
 
+  ;; configure storing undo tree files not next to files
+  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
+
   ;; search in directory on RET by default (instead of opening dired)
   (require 'helm)
   (defun helm-find-files-navigate-forward (orig-fun &rest args)
@@ -308,6 +322,9 @@ you should place your code here."
   ;; Typescript
   (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
   (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+
+  ;; Golang
+  (add-to-list 'exec-path "~/go/bin/")
 
   ;; set the frame title to show filename plus working directory
   (setq uniquify-buffer-name-style 'reverse)
@@ -374,3 +391,39 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
  '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(evil-want-Y-yank-to-eol t)
+ '(js2-mode-show-strict-warnings nil)
+ '(js2-strict-trailing-comma-warning nil)
+ '(package-selected-packages
+   '(powershell helm-gtags ggtags counsel-gtags counsel swiper ivy bmx-mode sql-indent yaml-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic graphql-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv rake minitest chruby bundler inf-ruby insert-shebang fish-mode company-shell xterm-color ws-butler winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org tide typescript-mode spaceline powerline smeargle shell-pop reveal-in-osx-finder restart-emacs rainbow-delimiters popwin persp-mode pcre2el pbcopy paradox spinner osx-trash osx-dictionary orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file neotree mwim multi-term move-text mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup macrostep lorem-ipsum livid-mode skewer-mode simple-httpd linum-relative link-hint launchctl json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc indent-guide hydra lv hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile helm-mode-manager helm-make helm-gitignore request helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck pkg-info epl flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit transient git-commit with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump f disaster diminish diff-hl company-tern s dash-functional tern dash company-statistics company-c-headers company column-enforce-mode coffee-mode cmake-mode clean-aindent-mode clang-format bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup))
+ '(persp-add-buffer-on-find-file t)
+ '(persp-auto-resume-time -1)
+ '(persp-nil-name "Default")
+ '(persp-reset-windows-on-nil-window-conf nil)
+ '(persp-set-ido-hooks t)
+ '(persp-set-last-persp-for-new-frames nil)
+ '(projectile-project-root-files
+   '("rebar.config" "project.clj" "build.boot" "SConstruct" "pom.xml" "build.sbt" "gradlew" "build.gradle" "Gemfile" "requirements.txt" "setup.py" "tox.ini" "package.json" "gulpfile.js" "Gruntfile.js" "bower.json" "composer.json" "Cargo.toml" "mix.exs" "stack.yaml" "info.rkt" "TAGS" "GTAGS" ".meteor" ".dropbox" ".git" ".hg" ".svn"))
+ '(term-char-mode-point-at-process-mark nil)
+ '(typescript-expr-indent-offset 0)
+ '(typescript-indent-level 2)
+ '(warning-suppress-log-types '((emacsql) (emacsql) (emacsql)))
+ '(warning-suppress-types '((emacsql) (emacsql))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
+ '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
+)
